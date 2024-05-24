@@ -1,6 +1,9 @@
 import requests
 import pandas as pd
 from tqdm import tqdm
+import urllib3
+
+urllib3.disable_warnings()
 
 def fetch_data(url):
     """
@@ -17,7 +20,7 @@ def fetch_data(url):
             print("URL not available for this city.")
             return None
         else:
-            response = requests.get(url)
+            response = requests.get(url, verify=False)
             if response.status_code == 200:
                 data = response.json()
                 return data
