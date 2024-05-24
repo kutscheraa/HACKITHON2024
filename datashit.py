@@ -72,8 +72,8 @@ def fetch_and_process_dataframes(csv_file):
             
             # Fetch data from URL
             data = fetch_data(url)
-            LINE_CLEAR = '\x1b[2K'
-            print(LINE_CLEAR, end= '\r')
+            
+            print('\x1b[2K', end= '\r')
             print(f'\rZískávám data města {city} z {url}', end='')
 
             if data:
