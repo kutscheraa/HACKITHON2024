@@ -41,7 +41,7 @@ def process_data(data):
     if data:
         informace = data.get('informace', [])
         selected_data = [{'název': item.get('název', {}).get('cs', ''),
-                          'datum_vyvěšení': item.get('datum_vyvěšení', '')}
+                          'datum_vyvěšení': item.get('vyvěšení', {}).get('datum', '')}
                          for item in informace]
         df = pd.DataFrame(selected_data)
         return df
@@ -81,9 +81,11 @@ def fetch_and_process_dataframes(csv_file):
 # Function call to fetch and process data from the CSV file
 dataframes_dict = fetch_and_process_dataframes('mesta.csv')
 
-# Print the dictionary of DataFrames
+# Print the dictionary of DataFrames and datum_vyvěšení for debugging purposes
 print("Dictionary of DataFrames:")
 for city, df in dataframes_dict.items():
     print(f"City: {city}")
     print(df)
+    # for _, row in df.iterrows():
+    #     print(f"Datum vyvěšení: {row['datum_vyvěšení']}")  <- print datumu vyveseni
     print("\n")
