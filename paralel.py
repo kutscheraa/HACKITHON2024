@@ -48,17 +48,22 @@ def process_data(data):
 
         for item in informace:
             dokument_info = ''
+            pdf_link = ''
             if item.get('dokument'):
                 dokument = item.get('dokument')[0]
                 dokument_info = f"{dokument.get('název', {}).get('cs', '')} ({dokument.get('url', '')})"
+                pdf_link = dokument.get('url', '')
                 
             selected_data.append({
                 'název': item.get('název', {}).get('cs', ''),
                 'datum_vyvěšení': item.get('vyvěšení', {}).get('datum', ''),
-                'dokument': dokument_info
+                'dokument': dokument_info,
+                'pdf_link': pdf_link
             })
 
         df = pd.DataFrame(selected_data)
+        # Remove rows where 'pdf_link' is empty
+        df = df[df['pdf_link'] != '']
         return df
     else:
         print("No data to process.")
