@@ -43,6 +43,7 @@ def process_data(data):
     """
     if data:
         informace = data['informace']
+        
         df = pd.DataFrame(informace)
         return df
     else:
@@ -72,7 +73,7 @@ def fetch_and_process_dataframes(csv_file):
             
             # Fetch data from URL
             data = fetch_data(url)
-            
+
             print('\x1b[2K', end= '\r')
             print(f'\rZískávám data města {city} z {url}', end='')
 
