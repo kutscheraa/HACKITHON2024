@@ -1,71 +1,78 @@
-import dash
-from dash import Dash
-from dash import html, Input, Output, callback, dcc
-import dash_bootstrap_components as dbc
-import pandas as pd
 import json
 import plotly.graph_objs as go
-import plotly.express as px
+import dash
+from dash import html, dcc
 
-from assets.fig_layout import my_figlayout, my_linelayout, my_figlayout2
+# Načtení souřadnic krajů z JSON souboru
+with open("data/kraje.json", "r", encoding='utf-8') as f:
+    kraje_geojson = json.load(f)
 
-app = Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],
-           suppress_callback_exceptions=True, prevent_initial_callbacks=True)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-server = app.server
+# Načtení souřadnic měst z JSON souboru
+with open("souradnice_mest.json", "r") as json_file:
+    souradnice_mest = json.load(json_file)
 
-# Load GeoJSON data from file
-with open('data/kraje.json', 'r', encoding='utf-8') as f:
-    geojson = json.load(f)
+# Seznam souřadnic pro plotly
+lats = [data["lat"] for data in souradnice_mest.values()]
+lons = [data["lon"] for data in souradnice_mest.values()]
+mesta = list(souradnice_mest.keys())
 
-# Create a dataframe with all Czech regions and some dummy counts
-df = pd.DataFrame({
-    'region': [
-        'Hlavní město Praha',
-        'Středočeský kraj',
-        'Jihočeský kraj',
-        'Plzeňský kraj',
-        'Karlovarský kraj',
-        'Ústecký kraj',
-        'Liberecký kraj',
-        'Královéhradecký kraj',
-        'Pardubický kraj',
-        'Kraj Vysočina',
-        'Jihomoravský kraj',
-        'Olomoucký kraj',
-        'Zlínský kraj',
-        'Moravskoslezský kraj'
-    ],
-})
+# Vytvoření mapy pomocí Plotly
+fig = go.Figure()
 
-fig = px.choropleth_mapbox(df, 
-                           geojson=geojson, 
-                           locations='region', 
-                           featureidkey="properties.name:cs", 
-                           color='region',
-                           labels={'count': 'Count'},
-                           mapbox_style="carto-positron",
-                           zoom=6.0, 
-                           center={"lat": 49.7437522, "lon": 15.3386356},
-                           )
+# Přidání bodů měst na mapu
+fig.add_trace(go.Scattermapbox(
+    lat=lats,
+    lon=lons,
+    mode='markers',
+    marker=dict(size=10, color='red'),
+    text=mesta,  # Jméno města při najetí na tečku
+    hoverinfo='text',  # Zobrazovat pouze text při najetí na tečku
+    name='Města'
+))
 
-# Update layout to include borders
-fig.update_layout(my_figlayout2)
-fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
-fig.update_traces(marker_line_width=1, marker_line_color='black')  # Add border color and width
+# Přidání hranic krajů
+for feature in kraje_geojson['features']:
+    geo_lat = []
+    geo_lon = []
+    for lon, lat in feature['geometry']['coordinates'][0]:
+        geo_lon.append(lon)
+        geo_lat.append(lat)
+    fig.add_trace(go.Scattermapbox(
+        lat=geo_lat,
+        lon=geo_lon,
+        mode="lines",
+        line=dict(width=1),
+        fill="toself",
+        fillcolor="rgba(0,0,0,0)",
+        marker=dict(size=0),
+        hoverinfo='none',
+        name=feature['properties']['name']
+    ))
 
-map_component = dcc.Graph(
-    id='geojson-map',
-    figure=fig
+# Nastavení layoutu mapy
+fig.update_layout(
+    mapbox=dict(
+        style="carto-positron",
+        center=dict(lat=49.8175, lon=15.473),  # Střed mapy
+        zoom=6
+    ),
+    legend=dict(
+        yanchor="top",
+        y=0.99,
+        xanchor="left",
+        x=0.01
+    )
 )
 
-# Add the map component to the app layout
+# Vytvoření aplikace Dash
+app = dash.Dash(__name__)
+
+# Přidání komponenty mapy do rozložení aplikace
 app.layout = html.Div([
     html.H1('HACKITHON 2024'),
-    map_component
+    dcc.Graph(figure=fig)
 ], className='row-content')
 
-############################################################################################
-# Run App
+# Spuštění serveru Dash
 if __name__ == '__main__':
     app.run_server(debug=True)
