@@ -1,5 +1,9 @@
 import requests
+import urllib3
 import pandas as pd
+
+# Pro Linux distribuce
+urllib3.disable_warnings()
 
 def fetch_data(url):
     """
@@ -16,7 +20,7 @@ def fetch_data(url):
             print("URL not available for this city.")
             return None
         else:
-            response = requests.get(url)
+            response = requests.get(url, verify=False)
             if response.status_code == 200:
                 data = response.json()
                 return data
@@ -68,6 +72,10 @@ def fetch_and_process_dataframes(csv_file):
             
             # Fetch data from URL
             data = fetch_data(url)
+            LINE_CLEAR = '\x1b[2K'
+            print(LINE_CLEAR, end= '\r')
+            print(f'\rZískávám data města {city} z {url}', end='')
+
             if data:
                 # Process data and add it to the dictionary
                 df = process_data(data)
@@ -80,6 +88,6 @@ def fetch_and_process_dataframes(csv_file):
 
 # Example usage:
 if __name__ == "__main__":
-    csv_file_path = 'mesta.csv'
+    csv_file_path = 'mestecka.csv'
     dataframes_dict = fetch_and_process_dataframes(csv_file_path)
     print(dataframes_dict)
