@@ -44,9 +44,20 @@ def process_data(data):
     """
     if data:
         informace = data.get('informace', [])
-        selected_data = [{'název': item.get('název', {}).get('cs', ''),
-                          'datum_vyvěšení': item.get('vyvěšení', {}).get('datum', '')}
-                         for item in informace]
+        selected_data = []
+
+        for item in informace:
+            dokument_info = ''
+            if item.get('dokument'):
+                dokument = item.get('dokument')[0]
+                dokument_info = f"{dokument.get('název', {}).get('cs', '')} ({dokument.get('url', '')})"
+                
+            selected_data.append({
+                'název': item.get('název', {}).get('cs', ''),
+                'datum_vyvěšení': item.get('vyvěšení', {}).get('datum', ''),
+                'dokument': dokument_info
+            })
+
         df = pd.DataFrame(selected_data)
         return df
     else:
@@ -107,5 +118,5 @@ for city, df in dataframes_dict.items():
     print(f"City: {city}")
     print(df)
     # for _, row in df.iterrows():
-    #     print(f"Datum vyvěšení: {row['datum_vyvěšení']}")  <- print datumu vyveseni
+    #     print(f"Datum vyvěšení: {row['datum_vyvěšení']}")
     print("\n")
