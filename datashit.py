@@ -88,6 +88,6 @@ def fetch_and_process_dataframes(csv_file):
 
 # Example usage:
 if __name__ == "__main__":
-    csv_file_path = 'mestecka.csv'
+    csv_file_path = 'mesta.csv'
     dataframes_dict = fetch_and_process_dataframes(csv_file_path)
     print(dataframes_dict)
