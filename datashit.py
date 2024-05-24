@@ -3,13 +3,13 @@ import pandas as pd
 
 def fetch_data(url):
     """
-    Fetches data from a given URL.
+    Fetches data from the given URL.
 
     Args:
-        url (str): The URL to fetch data from.
+        url (str): The URL from which to fetch the data.
 
     Returns:
-        dict or None: The fetched data as a dictionary, or None if failed.
+        dict or None: The fetched data as a dictionary, or None if fetching failed.
     """
     try:
         if url == 'null':
@@ -18,7 +18,8 @@ def fetch_data(url):
         else:
             response = requests.get(url)
             if response.status_code == 200:
-                return response.json()
+                data = response.json()
+                return data
             else:
                 print("Failed to retrieve data from the URL:", url)
                 return None
@@ -28,75 +29,57 @@ def fetch_data(url):
 
 def process_data(data):
     """
-    Processes the fetched data and returns it as a pandas DataFrame.
+    Processes the fetched data and returns a DataFrame.
 
     Args:
         data (dict): The fetched data.
 
     Returns:
-        pandas.DataFrame or None: The processed data as a DataFrame, or None if no data to process.
+        pandas.DataFrame or None: The processed data as a DataFrame, or None if there is no data.
     """
     if data:
-        informace = data.get('informace', [])
+        informace = data['informace']
         df = pd.DataFrame(informace)
         return df
     else:
         print("No data to process.")
         return None
 
-def fetch_data_from_dataframe(df):
+def fetch_and_process_dataframes(csv_file):
     """
-    Fetches and processes data from a pandas DataFrame.
+    Fetches and processes data from URLs provided in a CSV file and returns a dictionary of DataFrames.
 
     Args:
-        df (pandas.DataFrame): The DataFrame containing URLs.
+        csv_file (str): The path to the CSV file containing 'mesto' and 'url' columns.
 
     Returns:
-        pandas.DataFrame or None: The DataFrame with processed data added, or None if failed.
+        dict: A dictionary where keys are city names and values are DataFrames with corresponding data.
     """
+    city_dataframes = {}
+
     try:
+        # Read data from the CSV file
+        df = pd.read_csv(csv_file)
+        
+        # Iterate over rows in the CSV file
         for index, row in df.iterrows():
+            city = row['mesto']
             url = row['url']
+            
+            # Fetch data from URL
             data = fetch_data(url)
             if data:
-                df.loc[index, 'data'] = process_data(data)
-        return df
+                # Process data and add it to the dictionary
+                df = process_data(data)
+                if df is not None:
+                    city_dataframes[city] = df
     except Exception as e:
         print("An error occurred:", str(e))
-        return None
 
-def fetch_and_process_data(url_or_df):
-    """
-    Fetches and processes data from a URL or a pandas DataFrame.
+    return city_dataframes
 
-    Args:
-        url_or_df (str or pandas.DataFrame): The URL string or DataFrame containing URLs.
-
-    Returns:
-        pandas.DataFrame or None: The DataFrame with processed data added, or None if failed.
-    """
-    if isinstance(url_or_df, str):
-        data = fetch_data(url_or_df)
-        if data:
-            return process_data(data)
-    elif isinstance(url_or_df, pd.DataFrame):
-        return fetch_data_from_dataframe(url_or_df)
-    else:
-        print("Invalid input type. Please provide a URL string or a DataFrame.")
-        return None
-
-# Example usage
+# Example usage:
 if __name__ == "__main__":
-    # Example with URL string
-    example_url = 'https://www.benesov-city.cz/opendata-uredni-deska'
-    processed_data_url = fetch_and_process_data(example_url)
-    print("Processed data from URL:")
-    print(processed_data_url)
-    print()
-
-    # Example with DataFrame
-    example_df = pd.DataFrame({'mesto': ['Benešov'], 'url': [example_url]})
-    processed_data_df = fetch_and_process_data(example_df)
-    print("Processed data from DataFrame:")
-    print(processed_data_df)
-
+    csv_file_path = 'mesta.csv'
+    dataframes_dict = fetch_and_process_dataframes(csv_file_path)
+    print(dataframes_dict)
