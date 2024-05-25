@@ -21,7 +21,7 @@ for mesto in mesta:
         souradnice_mest[mesto] = {"lat": location.latitude, "lon": location.longitude}
 
 # Uložení souřadnic do JSON souboru v kořenovém adresáři
-with open("souradnice_mest.json", "w") as json_file:
+with open("data/souradnice_mest.json", "w") as json_file:
     json.dump(souradnice_mest, json_file)
 
 print("Soubor 'souradnice_mest.json' byl úspěšně uložen.")
