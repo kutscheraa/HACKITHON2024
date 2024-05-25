@@ -1,10 +1,12 @@
 import json
 import plotly.graph_objs as go
 import dash
-from dash import html, dcc
+from dash import html, dcc, dash_table
 import dash_bootstrap_components as dbc
+from dash.dependencies import Input, Output, State
 
 from assets.fig_layout import my_figlayout, my_figlayout2
+
 # Načtení souřadnic krajů z JSON souboru
 with open("data/kraje.json", "r", encoding='utf-8') as f:
     kraje_geojson = json.load(f)
@@ -70,14 +72,46 @@ fig.update_layout(
 )
 
 fig.update_layout(my_figlayout2)
+
 # Vytvoření aplikace Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],)
 
 # Přidání komponenty mapy do rozložení aplikace
 app.layout = html.Div([
-    html.H1('HACKITHON 2024'),
-    dcc.Graph(figure=fig, className='graph-container')
-], className='row-content par')
+    html.H1('HACKITHON 2024', className="par"),
+    dcc.Graph(figure=fig, className='graph-container', id='map'),
+    dbc.Modal([
+        dbc.ModalHeader("Region Information", id="modal-header"),
+        dbc.ModalBody(html.Div(id="modal-body")),
+        dbc.ModalFooter(dbc.Button(html.Span("", style={"font-size": "0em"}), id="close-modal", className="close-modal-button bg-white border-0")),
+    ], id="modal", is_open=False, fade=False),
+])
+
+
+@app.callback(
+    Output("modal", "is_open"),
+    [Input("map", "clickData"), Input("close-modal", "n_clicks")],
+    [State("modal", "is_open")],
+)
+def toggle_modal(click_data, close_clicks, is_open):
+    if close_clicks:
+        return False
+    if click_data:
+        return not is_open
+    return is_open
+
+
+@app.callback(
+    [Output("modal-header", "children"), Output("modal-body", "children")],
+    [Input("map", "clickData")]
+)
+def update_modal_content(click_data):
+    if not click_data or "text" not in click_data["points"][0]:
+        return "", ""
+    region_name = click_data["points"][0]["text"]
+    # Informace o kraji při rozkliknutí
+    return html.P(f"{region_name}"), html.P(f"Úřední dneska regionu {region_name} :")
+
 
 # Spuštění serveru Dash
 if __name__ == '__main__':
