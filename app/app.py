@@ -7,15 +7,15 @@ from dash.dependencies import Input, Output, State
 from assets.fig_layout import my_figlayout
 from utils import create_dict
 
-URLS_PATH = 'data/mesta.csv'
+URLS_PATH = 'app/data/mesta.csv'
 THREADS = 16
 
 # Načtení souřadnic krajů z JSON souboru
-with open("data/kraje.json", "r", encoding='utf-8') as f:
+with open("app/data/kraje.json", "r", encoding='utf-8') as f:
     kraje_geojson = json.load(f)
 
 # Načtení souřadnic měst z JSON souboru
-with open("souradnice_mest.json", "r") as json_file:
+with open("app/souradnice_mest.json", "r") as json_file:
     souradnice_mest = json.load(json_file)
 
 cities = create_dict(URLS_PATH, THREADS)
