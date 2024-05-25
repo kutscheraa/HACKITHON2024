@@ -4,6 +4,7 @@ import dash
 from dash import html, dcc, dash_table
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
+import dash_table
 
 from assets.fig_layout import my_figlayout, my_figlayout2
 
@@ -14,6 +15,9 @@ with open("data/kraje.json", "r", encoding='utf-8') as f:
 # Načtení souřadnic měst z JSON souboru
 with open("souradnice_mest.json", "r") as json_file:
     souradnice_mest = json.load(json_file)
+
+from paralel import fetch_and_process_dataframes
+df=fetch_and_process_dataframes('mesta.csv', 20)
 
 # Extracting bounds from the provided GeoJSON
 geojson_bounds = {
@@ -110,7 +114,16 @@ def update_modal_content(click_data):
         return "", ""
     region_name = click_data["points"][0]["text"]
     # Informace o kraji při rozkliknutí
-    return html.P(f"{region_name}"), html.P(f"Úřední deska regionu {region_name} :")
+    return html.P(f"{region_name}"), dash_table.DataTable(
+        id='data-table',
+        style_data={
+            'whiteSpace': 'normal',
+            'height': 'auto',
+        },
+        style_table={'overflowX': 'auto'},
+        columns=[{"name": i, "id": i} for i in df[region_name].columns if i in ['název']],
+        data=df[region_name].to_dict('records')
+    )
 
 
 # Spuštění serveru Dash

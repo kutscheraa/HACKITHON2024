@@ -28,7 +28,7 @@ def process_data(data):
         if not item.get('dokument'):
             continue
         dokument = item['dokument'][0]
-        dokument_info = f"{dokument.get('název', {}).get('cs', '')} ({dokument.get('url', '')})"
+        dokument_info = f"{dokument.get('název', {}).get('cs', '')}"
         pdf_link = dokument.get('url', '')
 
         if pdf_link:
