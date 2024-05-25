@@ -12,7 +12,7 @@ THREADS = 16
 
 # Získávání dat z api
 def fetch_data(url):
-    response = requests.get(url, verify=False, timeout=10)
+    response = requests.get(url, verify=False)
     if response.status_code == 200:
         return response.json()
     print(f"Nastala chyba při volání GET requestu na URL: {url}")        

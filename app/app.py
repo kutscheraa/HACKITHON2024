@@ -90,7 +90,7 @@ app.layout = html.Div([
         dbc.ModalHeader("Region Information", id="modal-header"),
         dbc.ModalBody(html.Div(id="modal-body")),
         dbc.ModalFooter(dbc.Button(html.Span("", style={"font-size": "0em"}), id="close-modal", className="close-modal-button bg-white border-0")),
-    ], id="modal", is_open=False, fade=False),
+    ], id="modal", is_open=False, fade=False, fullscreen=True),
 ])
 
 
@@ -120,10 +120,11 @@ def update_modal_content(click_data):
         id='data-table',
         style_data={
             'whiteSpace': 'normal',
+            'textAlign': 'left',
             'height': 'auto',
         },
         style_table={'overflowX': 'auto'},
-        columns=[{"name": i, "id": i} for i in cities[region_name].columns if i in ['název','datum_vyvěšení']],
+        columns=[{"name": i, "id": i} for i in cities[region_name].columns if i in ['název','datum_vyvěšení', 'dokument', 'pdf_link']],
         data=cities[region_name].to_dict('records')
     )
 
