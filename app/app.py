@@ -1,11 +1,12 @@
 import json
 import plotly.graph_objs as go
+import plotly.express as px
 import dash
 from dash import html, dcc, dash_table
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from assets.fig_layout import my_figlayout
-from utils import create_dict
+from utils import create_dict, city_stats
 
 URLS_PATH = 'data/mesta.csv'
 THREADS = 16
@@ -19,6 +20,7 @@ with open("souradnice_mest.json", "r") as json_file:
     souradnice_mest = json.load(json_file)
 
 cities = create_dict(URLS_PATH, THREADS)
+df = city_stats(cities)
 
 # Extracting bounds from the provided GeoJSON
 geojson_bounds = {
@@ -85,6 +87,10 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.
 # Přidání komponenty mapy do rozložení aplikace
 app.layout = html.Div([
     dcc.Graph(figure=fig, className='graph-container my-graph', id='map'),
+    html.Div([
+        dcc.Graph(id='bar-plot'),
+        dcc.Graph(id='time-series-plot'),
+    ]),
     dbc.Modal([
         dbc.ModalHeader("Region Information", id="modal-header"),
         dbc.ModalBody([
@@ -95,6 +101,21 @@ app.layout = html.Div([
     ], id="modal", is_open=False, fade=False, fullscreen=True),
 ])
 
+
+
+@app.callback(
+    Output('bar-plot', 'figure'),
+    Output('time-series-plot', 'figure'),
+    Input('bar-plot', 'id')
+)
+def update_graphs(_):
+    # Bar Plot
+    bar_fig = px.bar(df, x='mesto', y='frekvence', title="Průměrná měsíční frekvence záznamů", labels={'frekvence': 'Frekvence', 'mesto': 'Město'})
+
+    # Time Series Plot
+    time_series_fig = px.scatter(df, x='prvni', y='mesto', title="První záznam", labels={'prvni': 'První záznam', 'mesto': 'Město'})
+
+    return bar_fig, time_series_fig
 
 @app.callback(
     Output("modal", "is_open"),

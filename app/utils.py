@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 urllib3.disable_warnings()
 
-URLS_PATH = 'mesta.csv'
+URLS_PATH = 'data/mesta.csv'
 THREADS = 16
 
 # Získávání dat z api
@@ -32,14 +32,25 @@ def process_data(data):
             dokument_info = f"{dokument.get('název', {}).get('cs', '')}"
             pdf_link = dokument.get('url', '')
 
-        selected_data.append({
-            'název': item.get('název', {}).get('cs', ''),
-            'datum_vyvěšení': item.get('vyvěšení', {}).get('datum', ''),
-            'dokument': dokument_info,
-            'pdf_link': pdf_link
-        })
+        if item.get('vyvěšení', {}).get('datum', ''):
+            selected_data.append({
+                'název': item.get('název', {}).get('cs', ''),
+                'datum_vyvěšení': item.get('vyvěšení', {}).get('datum', ''),
+                'dokument': dokument_info,
+                'pdf_link': pdf_link
+            })
+        # Protože město Plzeň má zřejmě jiný standard
+        elif item.get('vyvěšení', {}).get('datum_a_čas', ''):
+            selected_data.append({
+                'název': item.get('název', {}).get('cs', ''),
+                'datum_vyvěšení': item.get('vyvěšení', {}).get('datum_a_čas', ''),
+                'dokument': dokument_info,
+                'pdf_link': pdf_link
+            })
 
-    return pd.DataFrame(selected_data) if selected_data else None
+    df = pd.DataFrame(selected_data)
+    df['datum_vyvěšení'] = pd.to_datetime(df['datum_vyvěšení'], utc=True).dt.date
+    return df
 
 # Získání a zpracování dat
 def fetch_and_process(city, url):
@@ -67,7 +78,7 @@ def create_dict(csv_file, threads=32):
 
 # Spočítání základních statistik dle zjištěných hodnot
 def city_stats(dict):
-    results_df = pd.DataFrame(columns=['City', 'Average Monthly Frequency', 'Most Used Word'])
+    results_df = pd.DataFrame(columns=['mesto', 'frekvence', 'slovo', 'celkem', 'prvni'])
 
     # Iterate over the city DataFrames
     for city, df in dict.items():
@@ -81,15 +92,25 @@ def city_stats(dict):
         word_counts = Counter(word for name in names for word in name.split() if len(word) > 3)
         most_used_word = word_counts.most_common(1)[0][0]
         
+        total = len(df)
+
+        first = df['datum_vyvěšení'].min()
+
         # Přidání výsledků do pandas dataframu
-        results_df = pd.concat([results_df, pd.DataFrame.from_records([{'City': city, 'Average Monthly Frequency': avg_monthly_freq, 'Most Used Word': most_used_word}])], ignore_index=True)
+        results_df = pd.concat([results_df, pd.DataFrame.from_records([{'mesto': city, 
+                                                                        'frekvence': avg_monthly_freq, 
+                                                                        'slovo': most_used_word, 
+                                                                        'celkem': total,
+                                                                        'prvni': first,
+                                                                        }])], ignore_index=True)
     return results_df
 
 
 if __name__ == "__main__":
     dataframes_dict = create_dict(URLS_PATH, THREADS)
     print("Výsledek")
-    for city, df in dataframes_dict.items():
-        print(f"Město {city}")
-        print(df.head(3))
-        print("\n")
+    #for city, df in dataframes_dict.items():
+    #    print(f"Město {city}")
+    #    print(df.head(3))
+    #    print("\n")
+    print(city_stats(dataframes_dict))
