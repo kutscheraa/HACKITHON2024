@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import dash_table
 
-from assets.fig_layout import my_figlayout, my_figlayout2
+from assets.fig_layout import my_figlayout
 
 # Načtení souřadnic krajů z JSON souboru
 with open("data/kraje.json", "r", encoding='utf-8') as f:
@@ -75,7 +75,8 @@ fig.update_layout(
     margin={"r":0,"t":0,"l":0,"b":0},
 )
 
-fig.update_layout(my_figlayout2)
+fig.update_layout(my_figlayout)
+fig.update_layout(showlegend=False)
 
 # Vytvoření aplikace Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],)

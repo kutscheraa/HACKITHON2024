@@ -29,7 +29,7 @@ yaxis_style = {
     'zeroline' : False
 }
 ###### mapa
-my_figlayout2 = go.Layout(
+my_figlayout = go.Layout(
     paper_bgcolor='rgba(0,0,0,0)',
     plot_bgcolor='rgba(0,0,0,0)',
     font = font_style,

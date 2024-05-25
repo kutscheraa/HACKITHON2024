@@ -23,6 +23,10 @@ body {
     border-radius: 60px;
 }
 
+.modebar{
+    display: none !important;
+}
+
 /* === NAV ===*/
 .logo {
     padding: 23px 1px 1px 1px;
