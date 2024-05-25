@@ -4,8 +4,8 @@ import dash
 from dash import html, dcc
 from dash.dependencies import Input, Output
 
-
 from assets.fig_layout import my_figlayout, my_figlayout2
+
 # Načtení souřadnic krajů z JSON souboru
 with open("data/kraje.json", "r", encoding='utf-8') as f:
     kraje_geojson = json.load(f)
@@ -57,17 +57,12 @@ fig.update_layout(
     mapbox=dict(
         style="carto-positron",
         center=dict(lat=49.8175, lon=15.473),  # Střed mapy
-        zoom=6,
+        zoom=6.1,
     ),
-    legend=dict(
-        yanchor="top",
-        y=0.99,
-        xanchor="left",
-        x=0.01
-    )
 )
 
 fig.update_layout(my_figlayout2)
+
 # Vytvoření aplikace Dash
 app = dash.Dash(__name__)
 
