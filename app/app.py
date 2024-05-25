@@ -90,6 +90,7 @@ app.layout = html.Div([
     html.Div([
         dcc.Graph(id='bar-plot'),
         dcc.Graph(id='time-series-plot'),
+        dcc.Graph(id='celkem-plot')  # New graph for 'celkem'
     ]),
     dbc.Modal([
         dbc.ModalHeader("Region Information", id="modal-header"),
@@ -101,21 +102,27 @@ app.layout = html.Div([
     ], id="modal", is_open=False, fade=False, fullscreen=True),
 ])
 
-
-
 @app.callback(
     Output('bar-plot', 'figure'),
     Output('time-series-plot', 'figure'),
+    Output('celkem-plot', 'figure'),  # Output for the new graph
     Input('bar-plot', 'id')
 )
 def update_graphs(_):
+    # Sorting DataFrame in descending order
+    df_sorted_by_freq = df.sort_values(by='frekvence', ascending=False)
+    df_sorted_by_celkem = df.sort_values(by='celkem', ascending=False)
+
     # Bar Plot
-    bar_fig = px.bar(df, x='mesto', y='frekvence', title="Průměrná měsíční frekvence záznamů", labels={'frekvence': 'Frekvence', 'mesto': 'Město'})
+    bar_fig = px.bar(df_sorted_by_freq, x='mesto', y='frekvence', title="Průměrná měsíční frekvence záznamů", labels={'frekvence': 'Frekvence', 'mesto': 'Město'})
 
     # Time Series Plot
     time_series_fig = px.scatter(df, x='prvni', y='mesto', title="První záznam", labels={'prvni': 'První záznam', 'mesto': 'Město'})
 
-    return bar_fig, time_series_fig
+    # New Plot for 'celkem'
+    celkem_fig = px.bar(df_sorted_by_celkem, x='mesto', y='celkem', title="Celkový počet záznamů", labels={'celkem': 'Celkem', 'mesto': 'Město'})
+
+    return bar_fig, time_series_fig, celkem_fig
 
 @app.callback(
     Output("modal", "is_open"),
@@ -128,7 +135,6 @@ def toggle_modal(click_data, close_clicks, is_open):
     if click_data:
         return not is_open
     return is_open
-
 
 @app.callback(
     [Output("modal-header", "children"), Output("modal-body", "children")],
@@ -162,7 +168,6 @@ def update_modal_content(click_data, search_value):
         ],
         data=region_data.to_dict('records')
     )
-
 
 # Spuštění serveru Dash
 if __name__ == '__main__':
