@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 urllib3.disable_warnings()
 
-URLS_PATH = 'mesta.csv'
+URLS_PATH = './data/mesta.csv'
 THREADS = 16
 
 # Získávání dat z api
@@ -24,13 +24,19 @@ def process_data(data):
 
     for item in informace:
         pdf_link = ""
-        if not item.get('dokument'):
-            dokument = ""
-            dokument_info = ""
-        else:
+        dokument_info = ""
+        
+        # Kontrola, zda 'dokument' existuje a není prázdný
+        if item.get('dokument'):
             dokument = item['dokument'][0]
-            dokument_info = f"{dokument.get('název', {}).get('cs', '')}"
-            pdf_link = dokument.get('url', '')
+            dokument_info = dokument.get('název', {}).get('cs', '')
+            pdf_link = dokument.get('url', '') 
+        else:
+            dokument_info = ""
+            if(item.get('uri','')):
+                pdf_link = item.get('uri', '')
+            else:
+                pdf_link = item.get('url', '')
 
         selected_data.append({
             'název': item.get('název', {}).get('cs', ''),
@@ -40,6 +46,7 @@ def process_data(data):
         })
 
     return pd.DataFrame(selected_data) if selected_data else None
+
 
 # Získání a zpracování dat
 def fetch_and_process(city, url):
@@ -54,15 +61,15 @@ def create_dict(csv_file, threads=32):
     
     with ThreadPoolExecutor(max_workers=threads) as executor:
         future_to_city = {
-            executor.submit(fetch_and_process, row['mesto'], row['url']): row['mesto']
-            for _, row in df.iterrows() if row['url'] and row['url'] != 'null'
+            executor.submit(fetch_and_process, row['mesto'], row['url'] if row['url'] and row['url'] != 'null' else row['uri']): row['mesto']
+            for _, row in df.iterrows() if row['url'] or row['uri']
         }
         
         for future in tqdm(as_completed(future_to_city), total=len(future_to_city), desc="Stahování dat"):
             city, city_df = future.result()
             if city_df is not None:
                 cities[city] = city_df
-    
+    print(cities[city])
     return cities
 
 # Spočítání základních statistik dle zjištěných hodnot
