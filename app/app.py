@@ -115,13 +115,13 @@ def update_graphs(_):
 
     # Bar Plot
     bar_fig = px.bar(df_sorted_by_freq, x='mesto', y='frekvence', title="Průměrná měsíční frekvence záznamů", labels={'frekvence': 'Frekvence', 'mesto': 'Město'})
-
+    bar_fig.update_layout(my_figlayout)
     # Time Series Plot
     time_series_fig = px.scatter(df, x='prvni', y='mesto', title="První záznam", labels={'prvni': 'První záznam', 'mesto': 'Město'})
-
+    time_series_fig.update_layout(my_figlayout)
     # New Plot for 'celkem'
     celkem_fig = px.bar(df_sorted_by_celkem, x='mesto', y='celkem', title="Celkový počet záznamů", labels={'celkem': 'Celkem', 'mesto': 'Město'})
-
+    celkem_fig.update_layout(my_figlayout)
     return bar_fig, time_series_fig, celkem_fig
 
 @app.callback(
