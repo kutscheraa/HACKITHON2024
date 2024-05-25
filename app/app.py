@@ -15,7 +15,7 @@ with open("data/kraje.json", "r", encoding='utf-8') as f:
     kraje_geojson = json.load(f)
 
 # Načtení souřadnic měst z JSON souboru
-with open("app/souradnice_mest.json", "r") as json_file:
+with open("souradnice_mest.json", "r") as json_file:
     souradnice_mest = json.load(json_file)
 
 cities = create_dict(URLS_PATH, THREADS)
