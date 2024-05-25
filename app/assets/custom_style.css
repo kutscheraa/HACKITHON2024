@@ -20,7 +20,7 @@ body {
 /* === dcc.Graphh components ===*/
 .dash-graph.my-graph {
     background-color: rgba(0,0,0,5.0%);
-    border-radius: 50px;
+    border-radius: 60px;
 }
 
 /* === NAV ===*/
