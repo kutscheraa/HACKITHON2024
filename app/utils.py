@@ -73,7 +73,6 @@ def create_dict(csv_file, threads=32):
             city, city_df = future.result()
             if city_df is not None:
                 cities[city] = city_df
-    print(cities[city])
     return cities
 
 # Spočítání základních statistik dle zjištěných hodnot
