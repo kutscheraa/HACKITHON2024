@@ -27,14 +27,6 @@ body {
     display: none !important;
 }
 
-/* === NAV ===*/
-.logo {
-    padding: 23px 1px 1px 1px;
-    text-align: center;
-    vertical-align: middle;
-    text-shadow: 0px 0px 50px #4be9fa;
-}
-
 .row-content {
     margin: 20px 0px 20px 0px;
     justify-content: space-between;
@@ -46,7 +38,7 @@ body {
 }
 
 input:hover {
-    box-shadow: 0 0 2px black;
+    box-shadow: 0 0 1px black;
 }
 
 .row-titles {
@@ -66,6 +58,8 @@ input:hover {
 }
 
 .graph-container {
+    margin-top: 50px;
+    margin-bottom: 50px;
     box-shadow: 0 20px 8px rgba(0,0,0,0.1);
     border-radius: 1px;
     text-shadow: 0px 0px 10px black;
