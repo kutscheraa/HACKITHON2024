@@ -1,10 +1,9 @@
 import pandas as pd
 from collections import Counter
-import paralel
+from paralel import fetch_and_process_dataframes
 
 # Assume dataframes_dict is available from the paralel.py code
-dataframes_dict = paralel.fetch_and_process_dataframes('mesta.csv')
-
+dataframes_dict = fetch_and_process_dataframes('mesta.csv')
 # Create a new DataFrame to store the results
 results_df = pd.DataFrame(columns=['City', 'Average Monthly Frequency', 'Most Used Word'])
 
@@ -24,7 +23,7 @@ for city, df in dataframes_dict.items():
     most_used_word = word_counts.most_common(1)[0][0]
     
     # Add the results to the new DataFrame
-    results_df = results_df.append({'City': city, 'Average Monthly Frequency': avg_monthly_freq, 'Most Used Word': most_used_word}, ignore_index=True)
+    results_df = pd.concat([results_df, pd.DataFrame.from_records([{'City': city, 'Average Monthly Frequency': avg_monthly_freq, 'Most Used Word': most_used_word}])], ignore_index=True)
 
 # Print the results
 print(results_df)

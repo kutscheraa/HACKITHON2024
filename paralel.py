@@ -10,7 +10,7 @@ def fetch_data(url):
     try:
         if not url or url == 'null':
             return None
-        response = requests.get(url, verify=False, timeout=5)
+        response = requests.get(url, verify=False, timeout=10)
         if response.status_code == 200:
             return response.json()
         return None
