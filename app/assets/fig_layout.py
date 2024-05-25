@@ -2,7 +2,7 @@ import plotly.graph_objects as go
 
 ###### FIG LAYOUT
 font_style = {
-    'color' : '#f6f6f6'
+    'color' : 'black'
 }
 
 margin_style = {
