@@ -25,32 +25,30 @@ def process_data(data):
     for item in informace:
         pdf_link = ""
         dokument_info = ""
-        
+
         # Kontrola, zda 'dokument' existuje a není prázdný
         if item.get('dokument'):
             dokument = item['dokument'][0]
             dokument_info = f"{dokument.get('název', {}).get('cs', '')}"
-            pdf_link = dokument.get('url', '')
+            pdf_link = dokument.get('url', '') or dokument.get('uri', '')
+        
+        # Kontrola, zda 'url' existuje přímo v itemu (některá města mohou mít url zde)
+        if not pdf_link:
+            pdf_link = item.get('url', '') or item.get('uri', '')
 
-        if item.get('vyvěšení', {}).get('datum', ''):
+        datum_vyveseni = item.get('vyvěšení', {}).get('datum', '') or item.get('vyvěšení', {}).get('datum_a_čas', '')
+        
+        if datum_vyveseni:
             selected_data.append({
                 'název': item.get('název', {}).get('cs', ''),
-                'datum_vyvěšení': item.get('vyvěšení', {}).get('datum', ''),
-                'dokument': dokument_info,
-                'pdf_link': pdf_link
-            })
-        # Protože město Plzeň má zřejmě jiný standard
-        elif item.get('vyvěšení', {}).get('datum_a_čas', ''):
-            selected_data.append({
-                'název': item.get('název', {}).get('cs', ''),
-                'datum_vyvěšení': item.get('vyvěšení', {}).get('datum_a_čas', ''),
+                'datum_vyvěšení': datum_vyveseni,
                 'dokument': dokument_info,
                 'pdf_link': pdf_link
             })
 
     df = pd.DataFrame(selected_data)
-    df['datum_vyvěšení'] = pd.to_datetime(df['datum_vyvěšení'], utc=True).dt.date
-    return df
+    df['datum_vyvěšení'] = pd.to_datetime(df['datum_vyvěšení'], errors='coerce', utc=True).dt.date
+    return df if not df.empty else None
 
 # Získání a zpracování dat
 def fetch_and_process(city, url):
@@ -73,7 +71,6 @@ def create_dict(csv_file, threads=32):
             city, city_df = future.result()
             if city_df is not None:
                 cities[city] = city_df
-    print(cities[city])
     return cities
 
 # Spočítání základních statistik dle zjištěných hodnot
