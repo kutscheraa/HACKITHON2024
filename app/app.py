@@ -2,8 +2,7 @@ import json
 import plotly.graph_objs as go
 import dash
 from dash import html, dcc
-from dash.dependencies import Input, Output
-
+import dash_bootstrap_components as dbc
 
 from assets.fig_layout import my_figlayout, my_figlayout2
 # Načtení souřadnic krajů z JSON souboru
@@ -13,6 +12,14 @@ with open("data/kraje.json", "r", encoding='utf-8') as f:
 # Načtení souřadnic měst z JSON souboru
 with open("souradnice_mest.json", "r") as json_file:
     souradnice_mest = json.load(json_file)
+
+# Extracting bounds from the provided GeoJSON
+geojson_bounds = {
+    "west": 12.0905752,
+    "east": 18.8592531,
+    "south": 48.5518081,
+    "north": 51.0556945
+}
 
 # Seznam souřadnic pro plotly
 lats = [data["lat"] for data in souradnice_mest.values()]
@@ -46,7 +53,7 @@ for feature in kraje_geojson['features']:
         mode="lines",
         line=dict(width=1),
         fill="toself",
-        fillcolor="rgba(0,0,0,0)",
+        fillcolor="rgba(0,0,0,0)",  # Fully transparent for other regions
         marker=dict(size=0),
         hoverinfo='none',
         name=feature['properties']['name'],
@@ -56,25 +63,20 @@ for feature in kraje_geojson['features']:
 fig.update_layout(
     mapbox=dict(
         style="carto-positron",
-        center=dict(lat=49.8175, lon=15.473),  # Střed mapy
-        zoom=6,
+        center=dict(lat=49.7439047, lon=15.3381061),  # Střed mapy
+        zoom=6.5,  # Adjust zoom level as necessary
     ),
-    legend=dict(
-        yanchor="top",
-        y=0.99,
-        xanchor="left",
-        x=0.01
-    )
+    margin={"r":0,"t":0,"l":0,"b":0},
 )
 
 fig.update_layout(my_figlayout2)
 # Vytvoření aplikace Dash
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],)
 
 # Přidání komponenty mapy do rozložení aplikace
 app.layout = html.Div([
     html.H1('HACKITHON 2024'),
-    dcc.Graph(figure=fig)
+    dcc.Graph(figure=fig, className='graph-container')
 ], className='row-content par')
 
 # Spuštění serveru Dash
