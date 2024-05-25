@@ -121,7 +121,7 @@ def update_modal_content(click_data):
             'height': 'auto',
         },
         style_table={'overflowX': 'auto'},
-        columns=[{"name": i, "id": i} for i in df[region_name].columns if i in ['název']],
+        columns=[{"name": i, "id": i} for i in df[region_name].columns if i in ['název','datum_vyvěšení']],
         data=df[region_name].to_dict('records')
     )
 

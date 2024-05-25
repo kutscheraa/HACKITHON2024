@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 from tqdm import tqdm
+from collections import Counter
 import urllib3
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -63,6 +64,29 @@ def fetch_and_process_dataframes(csv_file, max_workers=20):
                 city_dataframes[city] = city_df
     
     return city_dataframes
+
+def df_stats(dataframes_dict):
+    results_df = pd.DataFrame(columns=['City', 'Average Monthly Frequency', 'Most Used Word'])
+
+    # Iterate over the city DataFrames
+    for city, df in dataframes_dict.items():
+        # Convert 'datum_vyvěšení' column to datetime type
+        df['datum_vyvěšení'] = pd.to_datetime(df['datum_vyvěšení'])
+        
+        # Extract the 'název' column and convert to lowercase
+        names = df['název'].str.lower()
+        
+        # Calculate the average monthly frequency
+        avg_monthly_freq = len(names) / len(df['datum_vyvěšení'].dt.to_period('M').unique())
+        
+        # Find the most used word (longer than 3 characters)
+        word_counts = Counter(word for name in names for word in name.split() if len(word) > 3)
+        most_used_word = word_counts.most_common(1)[0][0]
+        
+        # Add the results to the new DataFrame
+        results_df = pd.concat([results_df, pd.DataFrame.from_records([{'City': city, 'Average Monthly Frequency': avg_monthly_freq, 'Most Used Word': most_used_word}])], ignore_index=True)
+
+    return results_df
 
 # Function call to fetch and process data from the CSV file
 dataframes_dict = fetch_and_process_dataframes('mesta.csv', 20)
