@@ -45,11 +45,6 @@ body {
     color: black;
 }
 
-input[type='radio'] {
-    accent-color: #042f33;
-    margin: 5px 5px 5px 5px;
-}
-
 input:hover {
     box-shadow: 0 0 2px black;
 }
@@ -58,37 +53,6 @@ input:hover {
     padding: 10px 0px 20px 0px;
     text-align: center;
     text-decoration: solid;
-}
-/* === BUTTON ===*/
-.my-button {
-    background-color: #042f33;
-    border: solid 1px #3DED97;
-    border-radius: 25px;
-    padding: 10px 20px 10px 20px;
-    font-size: 18px;
-    margin: 0px;
-    box-shadow: 0 0 5px #042f33;
-}
-
-.my-button:hover {
-    box-shadow: 0 0 10px #3DED97;
-}
-
-.my-button:active {
-    box-shadow: 0 0 10px #3DED97;
-  }
-
-/* === MAP DROPDOWN ===*/
-.Select-control, .Select-menu-outer {
-    background-color: #042f33 !important;
-    border-width: 1px;
-    border-color: #042f33 !important;
-  }
-
-/* === LOADING ===*/
-.dash-sk-circle .dash-sk-child:before {
-    background-color: #3DED97 !important;
-    box-shadow: 0 0 20px #3DED97 !important;
 }
 
 .header {
