@@ -17,24 +17,10 @@ body {
     font-size: 18px;
 }
 
-.header {
-    font-family: 'Roboto', sans-serif;
-    color: #333;
-    text-align: center;
-    margin-top: 5px;
-    box-shadow: 0 8px 7px rgba(0,0,0,0.1);
-    border-radius: 2px;
-}
-
-.graph-container {
-    box-shadow: 0 20px 8px rgba(0,0,0,0.1);
-    border-radius: 1px;
-}
-
 /* === dcc.Graphh components ===*/
 .dash-graph.my-graph {
-    background-color: rgba(0,0,0,11.0%);
-    border-radius: 25px;
+    background-color: rgba(0,0,0,5.0%);
+    border-radius: 60px;
 }
 
 /* === NAV ===*/
@@ -45,36 +31,6 @@ body {
     text-shadow: 0px 0px 50px #4be9fa;
 }
 
-.app-brand {
-    font-size: 35px;
-    font-weight: 200;
-    text-shadow: 0px 0px 50px #4be9fa;
-}
-
-.my-nav {
-    font-size: 18px !important;
-}
-
-.nav-pills .nav-link.active {
-    background-color: #042f33;
-}
-
-/* === FOOTER ===*/
-.hr-footer {
-    height: 5px;
-}
-
-.footer {
-    font-size: 15px;
-}
-
-
-.guide {
-    text-align: left;
-    font-size: 16px;
-    font-weight: 100; 
-}
-
 .row-content {
     margin: 20px 0px 20px 0px;
     justify-content: space-between;
@@ -82,6 +38,7 @@ body {
 
 .par {
     text-align: center;
+    color: black;
 }
 
 input[type='radio'] {
@@ -93,37 +50,10 @@ input:hover {
     box-shadow: 0 0 10px #3DED97;
 }
 
-input[type='text'] {
-    size: 50px;
-    border-radius: 25px;
-    border: solid 1px #3DED97;
-    accent-color: #042f33;
-    background-color: #042f33;
-    padding: 12px 20px;
-    margin: 5px 0;
-    position: relative;
-    left: -75%;
-}
-
-input[type='password'] {
-    border-radius: 25px;
-    border: solid 1px #3DED97;
-    accent-color: #042f33;
-    background-color: #042f33;
-    padding: 12px 20px;
-    margin: 5px 0;
-    position: relative;
-    left: -75%;
-}
-
 .row-titles {
     padding: 10px 0px 20px 0px;
     text-align: center;
     text-decoration: solid;
-}
-
-.dash-dropdown {
-    margin: 5px 0px 5px 0px;
 }
 /* === BUTTON ===*/
 .my-button {
@@ -155,4 +85,20 @@ input[type='password'] {
 .dash-sk-circle .dash-sk-child:before {
     background-color: #3DED97 !important;
     box-shadow: 0 0 20px #3DED97 !important;
+}
+
+.header {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    text-align: center;
+    margin-top: 5px;
+    box-shadow: 0 3px 3px rgba(0,0,0,0.1);
+    border-radius: 2px;
+    text-shadow: 4px 4px 70px black;
+}
+
+.graph-container {
+    box-shadow: 0 20px 8px rgba(0,0,0,0.1);
+    border-radius: 1px;
+    text-shadow: 0px 0px 10px black;
 }
