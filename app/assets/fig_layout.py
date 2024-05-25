@@ -6,10 +6,10 @@ font_style = {
 }
 
 margin_style = {
-    'b': 10,
+    'b': 0,
     'l': 50,
     'r': 50,
-    't': 10,
+    't': 30,
     'pad': 0
 }
 
