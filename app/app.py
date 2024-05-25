@@ -171,4 +171,4 @@ def update_modal_content(click_data, search_value):
 
 # Spuštění serveru Dash
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
