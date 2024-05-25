@@ -82,7 +82,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.
 
 # Přidání komponenty mapy do rozložení aplikace
 app.layout = html.Div([
-    html.H1('HACKITHON 2024', className="par"),
+    html.H1('HACKITHON 2024', className="par header"),
     dcc.Graph(figure=fig, className='graph-container', id='map'),
     dbc.Modal([
         dbc.ModalHeader("Region Information", id="modal-header"),
