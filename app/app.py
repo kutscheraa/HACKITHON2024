@@ -110,7 +110,7 @@ def update_modal_content(click_data):
         return "", ""
     region_name = click_data["points"][0]["text"]
     # Informace o kraji při rozkliknutí
-    return html.P(f"{region_name}"), html.P(f"Úřední dneska regionu {region_name} :")
+    return html.P(f"{region_name}"), html.P(f"Úřední deska regionu {region_name} :")
 
 
 # Spuštění serveru Dash
