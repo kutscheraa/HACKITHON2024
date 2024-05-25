@@ -145,7 +145,7 @@ def update_modal_content(click_data, search_value):
         region_data = region_data[region_data.apply(lambda row: search_value.lower() in str(row).lower(), axis=1)]
 
     # Link na PDF soubor
-    region_data['pdf_link'] = region_data['pdf_link'].apply(lambda x: f'[Link]({x})' if x else '')
+    region_data['pdf_link'] = region_data['pdf_link'].apply(lambda x: f'[Link]({x})' if x else '[Není k dispozici]')
 
     # Informace o kraji při rozkliknutí
     return html.P(f"{region_name}"), dash_table.DataTable(
