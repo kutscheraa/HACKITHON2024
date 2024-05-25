@@ -8,8 +8,8 @@ font_style = {
 margin_style = {
     'b': 10,
     'l': 50,
-    'r': 8,
-    't': 50,
+    'r': 50,
+    't': 10,
     'pad': 0
 }
 
@@ -48,7 +48,7 @@ my_figlayout2 = go.Layout(
     margin = margin_style,
     xaxis = xaxis_style,
     yaxis = yaxis_style,
-    height = 400
+    height = 580,
 )
 
 
