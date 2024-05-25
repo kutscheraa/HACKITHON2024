@@ -51,7 +51,7 @@ input[type='radio'] {
 }
 
 input:hover {
-    box-shadow: 0 0 10px #3DED97;
+    box-shadow: 0 0 2px black;
 }
 
 .row-titles {

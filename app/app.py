@@ -7,15 +7,15 @@ from dash.dependencies import Input, Output, State
 from assets.fig_layout import my_figlayout
 from utils import create_dict
 
-URLS_PATH = 'data/mesta.csv'
+URLS_PATH = 'app/data/mesta.csv'
 THREADS = 16
 
 # Načtení souřadnic krajů z JSON souboru
-with open("data/kraje.json", "r", encoding='utf-8') as f:
+with open("app/data/kraje.json", "r", encoding='utf-8') as f:
     kraje_geojson = json.load(f)
 
 # Načtení souřadnic měst z JSON souboru
-with open("souradnice_mest.json", "r") as json_file:
+with open("app/souradnice_mest.json", "r") as json_file:
     souradnice_mest = json.load(json_file)
 
 cities = create_dict(URLS_PATH, THREADS)
@@ -43,7 +43,7 @@ fig.add_trace(go.Scattermapbox(
     mode='markers',
     marker=dict(size=10, color='red'),
     text=mesta,  # Jméno města při najetí na tečku
-    hoverinfo='text',  # Zobrazovat pouze text při najetí na tečku
+    hoverinfo='text',  # Zobrazovat pouze text při najetí na marker
     name='Města',
 ))
 
@@ -88,7 +88,10 @@ app.layout = html.Div([
     dcc.Graph(figure=fig, className='graph-container my-graph', id='map'),
     dbc.Modal([
         dbc.ModalHeader("Region Information", id="modal-header"),
-        dbc.ModalBody(html.Div(id="modal-body")),
+        dbc.ModalBody([
+            dcc.Input(id='search-input', type='text', placeholder='Search...', className='mb-2'),
+            html.Div(id="modal-body")
+        ]),
         dbc.ModalFooter(dbc.Button(html.Span("", style={"font-size": "0em"}), id="close-modal", className="close-modal-button bg-white border-0")),
     ], id="modal", is_open=False, fade=False, fullscreen=True),
 ])
@@ -109,12 +112,21 @@ def toggle_modal(click_data, close_clicks, is_open):
 
 @app.callback(
     [Output("modal-header", "children"), Output("modal-body", "children")],
-    [Input("map", "clickData")]
+    [Input("map", "clickData"), Input("search-input", "value")]
 )
-def update_modal_content(click_data):
+def update_modal_content(click_data, search_value):
     if not click_data or "text" not in click_data["points"][0]:
         return "", ""
     region_name = click_data["points"][0]["text"]
+    region_data = cities[region_name]
+
+    # Filter dle inputu
+    if search_value:
+        region_data = region_data[region_data.apply(lambda row: search_value.lower() in str(row).lower(), axis=1)]
+
+    # Link na PDF soubor
+    region_data['pdf_link'] = region_data['pdf_link'].apply(lambda x: f'[Link]({x})' if x else '')
+
     # Informace o kraji při rozkliknutí
     return html.P(f"{region_name}"), dash_table.DataTable(
         id='data-table',
@@ -124,8 +136,11 @@ def update_modal_content(click_data):
             'height': 'auto',
         },
         style_table={'overflowX': 'auto'},
-        columns=[{"name": i, "id": i} for i in cities[region_name].columns if i in ['název','datum_vyvěšení', 'dokument', 'pdf_link']],
-        data=cities[region_name].to_dict('records')
+        columns=[
+            {"name": i, "id": i, "presentation": "markdown"} if i == 'pdf_link' else {"name": i, "id": i}
+            for i in region_data.columns if i in ['název','datum_vyvěšení', 'dokument', 'pdf_link']
+        ],
+        data=region_data.to_dict('records')
     )
 
 
